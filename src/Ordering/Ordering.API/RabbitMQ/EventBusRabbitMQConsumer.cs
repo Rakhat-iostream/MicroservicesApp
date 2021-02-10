@@ -18,7 +18,7 @@ namespace Ordering.API.RabbitMQ
         private readonly IRabbitMQConnection _connection;
         private readonly IMapper _mapper;
 
-        public EventBusRabbitMQConsumer(IRabbitMQConnection connection, IMapper mapper, IServiceScopeFactory serviceScopeFactory)
+        public EventBusRabbitMQConsumer(IRabbitMQConnection connection, IMapper mapper)
         {
             _connection = connection;
             _mapper = mapper;
@@ -31,12 +31,12 @@ namespace Ordering.API.RabbitMQ
 
             var consumer = new EventingBasicConsumer(channel);
 
-            consumer.Received += ReceivedEvent;
+            consumer.Received += OnReceivedEvent;
 
             channel.BasicConsume(queue: EventBusConstants.BasketCheckoutQueue, autoAck: true, consumer: consumer);
         }
 
-        private async void ReceivedEvent(object sender, BasicDeliverEventArgs e)
+        private async void OnReceivedEvent(object sender, BasicDeliverEventArgs e)
         {
             if (e.RoutingKey == EventBusConstants.BasketCheckoutQueue)
             {
