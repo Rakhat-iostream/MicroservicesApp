@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:56025",
+      "applicationUrl": "http://localhost:50638",
       "sslPort": 0
     }
   },
@@ -17,10 +17,10 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Catalog.API": {
+    "Basket.API": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/v1/Catalog",
+      "launchUrl": "api/v1/Basket",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

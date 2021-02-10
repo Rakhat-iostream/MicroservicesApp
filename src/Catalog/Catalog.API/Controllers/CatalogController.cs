@@ -28,7 +28,8 @@ namespace Catalog.API.Controllers
         [ProducesResponseType(typeof(IEnumerable<Product>), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
-            throw new NotImplementedException();
+            var products = await _repository.GetProducts();
+            return Ok(products);
         }
 
         [HttpGet("{id:length(24)}", Name = "GetProduct")]
@@ -36,7 +37,15 @@ namespace Catalog.API.Controllers
         [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<Product>> GetProduct(string id)
         {
-            throw new NotImplementedException();
+            var product = await _repository.GetProduct(id);
+
+            if (product == null)
+            {
+                _logger.LogError($"Product with id: {id}, hasn't been found in database.");
+                return NotFound();
+            }
+
+            return Ok(product);
         }
 
         [Route("[action]/{category}")]
@@ -44,28 +53,31 @@ namespace Catalog.API.Controllers
         [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<IEnumerable<Product>>> GetProductByCategory(string category)
         {
-            throw new NotImplementedException();
+            var product = await _repository.GetProductByCategory(category);
+            return Ok(product);
         }
 
         [HttpPost]
         [ProducesResponseType(typeof(Product), (int)HttpStatusCode.Created)]
         public async Task<ActionResult<Product>> CreateProduct([FromBody] Product product)
         {
-            throw new NotImplementedException();
+            await _repository.Create(product);
+
+            return CreatedAtRoute("GetProduct", new { id = product.Id }, product);
         }
 
         [HttpPut]
         [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> UpdateProduct([FromBody] Product value)
         {
-            throw new NotImplementedException();
+            return Ok(await _repository.Update(value));
         }
 
         [HttpDelete("{id:length(24)}")]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeleteProductById(string id)
         {
-            throw new NotImplementedException();
+            return Ok(await _repository.Delete(id));
         }
     }
 }
