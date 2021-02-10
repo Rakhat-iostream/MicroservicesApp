@@ -17,7 +17,7 @@ namespace Ordering.Infrastructure.Repositories
         {
         }
 
-        public async Task<IEnumerable<Order>> GetOrdersByUsername(string userName)
+        public async Task<IEnumerable<Order>> GetOrdersByUsername(string username)
         {
             throw new NotImplementedException();
         }
