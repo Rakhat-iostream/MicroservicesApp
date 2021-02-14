@@ -49,7 +49,15 @@ namespace Ordering.API
             #endregion
 
             #region RabbitMQ Dependencies
-
+            services.AddSingleton<IRabbitMQConnection>(s =>
+            {
+                var factory = new ConnectionFactory() { HostName = Configuration["EventBus:HostName"] };
+                factory.UserName = Configuration["EventBus:Username"];
+                factory.Password = Configuration["EventBus:Password"];
+                Console.WriteLine(factory.HostName + " " + factory.UserName + " " + factory.Password);
+                return new RabbitMQConnection(factory);
+            });
+            services.AddSingleton<EventBusRabbitMQConsumer>();
             #endregion
 
             #region Swagger Dependencies

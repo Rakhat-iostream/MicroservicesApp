@@ -17,11 +17,13 @@ namespace Ordering.API.RabbitMQ
     {
         private readonly IRabbitMQConnection _connection;
         private readonly IMapper _mapper;
+        private IServiceScopeFactory _factory;
 
-        public EventBusRabbitMQConsumer(IRabbitMQConnection connection, IMapper mapper)
+        public EventBusRabbitMQConsumer(IRabbitMQConnection connection, IMapper mapper, IServiceScopeFactory factory)
         {
             _connection = connection;
             _mapper = mapper;
+            _factory = factory;
         }
 
         public void Consume()
@@ -40,7 +42,11 @@ namespace Ordering.API.RabbitMQ
         {
             if (e.RoutingKey == EventBusConstants.BasketCheckoutQueue)
             {
-                throw new NotImplementedException();
+                var message = Encoding.UTF8.GetString(e.Body.ToArray());
+                var order = JsonConvert.DeserializeObject<Order>(message);
+                using var scope = _factory.CreateScope();
+                var repos = scope.ServiceProvider.GetService<IOrderRepository>();
+                await repos.AddAsync(order);
             }
         }
 
