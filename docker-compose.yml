@@ -1,19 +1,35 @@
 version: '3.4'
 
 services:
-    catalogdb:
-        image: mongo
-    basketdb:
-        image: redis
-    rabbitmq:
-        image: rabbitmq:3-management-alpine
-    catalog.api:
-        image: ${DOCKER_REGISTRY-}catalogapi
-        build:
-            context: .
-            dockerfile: src/Catalog/Catalog.API/Dockerfile
-    basket.api:
-        image: ${DOCKER_REGISTRY-}basketapi
-        build:
-            context: .
-            dockerfile: src/Basket/Basket.API/Dockerfile
+  catalogdb:
+    image: mongo
+  catalog.api:
+    image: ${DOCKER_REGISTRY-}catalogapi
+    build:
+      context: .
+      dockerfile: src/Catalog/Catalog.API/Dockerfile
+
+  rabbitmq:
+    image: rabbitmq:3-management  
+  basketdb:
+    image: redis
+  basket.api:
+    image: ${DOCKER_REGISTRY-}basketapi
+    build:
+      context: .
+      dockerfile: src/Basket.API/Dockerfile
+
+  orderingdb:
+    image: postgres
+  ordering.api:
+    image: ${DOCKER_REGISTRY-}orderingapi
+    build:
+      context: .
+      dockerfile: src/Ordering/Ordering.API/Dockerfile
+  ocelotapigateway:
+    image: ${DOCKER_REGISTRY-}ocelotapigateway
+    build:
+      context: .
+      dockerfile: src/APIGateway/OcelotAPIGateway/Dockerfile
+
+

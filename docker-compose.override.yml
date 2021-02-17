@@ -1,47 +1,99 @@
 version: '3.4'
 
 services:
-    catalogdb:
+   catalogdb:
+        image: mongo
         container_name: catalogdb
         restart: always
         volumes:
             - ${WEBAPP_STORAGE_HOME}/site:/data/db
         ports:
             - "27017:27017"
-    basketdb:
+
+   catalog.api:
+        image: teslaboy/catalogapi:2
+        environment:
+          - ASPNETCORE_ENVIRONMENT=Development
+          - "CatalogDatabaseSettings:ConnectionString=mongodb://catalogdb:27017"
+        depends_on:
+          - catalogdb
+        volumes:
+          - ${HOME}/.microsoft/usersecrets/:/root/.microsoft/usersecrets
+          - ${HOME}/.aspnet/https:/root/.aspnet/https/
+        ports:
+          - "8000:80"
+
+   basketdb:
+        image: redis
         container_name: basketdb
         restart: always
         volumes:
-            - ${WEBAPP_STORAGE_HOME}/site:/data/db
+            - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+            - ./redis/volume/:/data
         ports:
             - "6379:6379"
-    rabbitmq:
+
+   basket.api:
+        image: teslaboy/basketapi:3
+        environment:
+          - ASPNETCORE_ENVIRONMENT=Development
+          - "ConnectionStrings:Redis=basketdb:6379"
+          - "EventBus:HostName=rabbitmq"
+          - "EventBus:Username=guest"
+          - "EventBus:Password=guest"
+        depends_on:
+            - basketdb
+            - rabbitmq
+        ports:
+            - "5001:80"
+        volumes:
+            - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+
+   rabbitmq:
+        image: rabbitmq:3-management
+        hostname: rabbitmq
         container_name: rabbitmq
         restart: always
         ports:
             - "5672:5672"
             - "15672:15672"
-    catalog.api:
+   orderingdb:
+        image: postgres
+        container_name: orderingdb
+        restart: always
         environment:
-            - ASPNETCORE_ENVIRONMENT=Development
-            - "CatalogDatabaseSettings:ConnectionString=mongodb://catalogdb:27017"
-        depends_on:
-            - catalogdb
-        volumes:
-            - ${HOME}/.microsoft/usersecrets/:/root/.microsoft/usersecrets
-            - ${HOME}/.aspnet/https:/root/.aspnet/https/
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: limara2015
+            POSTGRES_DB: OrderDb
         ports:
-            - "8000:80"
-    basket.api:
-        environment:
-            - ASPNETCORE_ENVIRONMENT=Development
-            - "ConnectionStrings:Redis=basketdb:6379"
-            - "EventBus:HostName=rabbitmq"
+            - "5432:5432"
+
+   ordering.api:
         depends_on:
-            - basketdb
+            - orderingdb
             - rabbitmq
-        volumes:
-            - ${HOME}/.microsoft/usersecrets/:/root/.microsoft/usersecrets
-            - ${HOME}/.aspnet/https:/root/.aspnet/https/
+        environment:
+          - ASPNETCORE_ENVIRONMENT=Development
+          - "EventBus:HostName=rabbitmq"
+          - "EventBus:Username=guest"
+          - "EventBus:Password=guest"
         ports:
-            - "8001:80"
+          - "5000:80"
+        volumes:
+          - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+   ocelotapigateway:
+        container_name: apigateway
+        environment:
+          - ASPNETCORE_ENVIRONMENT=Development
+        depends_on:
+          - catalog.api
+          - basket.api
+          - ordering.api
+        volumes:
+          - ${HOME}/.microsoft/usersecrets/:/root/.microsoft/usersecrets
+          - ${HOME}/.aspnet/https:/root/.aspnet/https/
+        ports:
+          - "7000:80"
+
