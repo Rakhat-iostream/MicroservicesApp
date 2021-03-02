@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Ordering.API.Extentions;
 
 namespace Ordering.API
 {
@@ -13,7 +14,7 @@ namespace Ordering.API
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            CreateHostBuilder(args).Build().ApplyMigrations().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

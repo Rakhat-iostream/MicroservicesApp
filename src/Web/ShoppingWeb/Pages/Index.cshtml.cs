@@ -29,21 +29,11 @@ namespace ShoppingWeb.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAddToCartAsync(string productId)
+        public async Task<IActionResult> OnPostAddToCartAsync(CartItem cartItem)
         {
             //if (!User.Identity.IsAuthenticated)
             //    return RedirectToPage("./Account/Login", new { area = "Identity" });
-            username = HttpContext.Session.GetString("username");
-            if (string.IsNullOrEmpty(username)) return RedirectToPage("Login", new { loginError = "Please sign in" });
-            var item = await _productApi.GetProduct(productId);
-            await _basketApi.AddItem(username, new CartItem
-            {
-                ProductId = productId,
-                Color = "Black",
-                Price = item.Price,
-                Quantity = 1,
-                ProductName = item.Name
-            });
+            await _basketApi.AddItem("test", cartItem);
             return RedirectToPage("Cart");
         }
     }

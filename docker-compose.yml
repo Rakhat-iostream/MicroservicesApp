@@ -17,7 +17,7 @@ services:
     image: ${DOCKER_REGISTRY-}basketapi
     build:
       context: .
-      dockerfile: src/Basket.API/Dockerfile
+      dockerfile: src/Basket/Basket.API/Dockerfile
 
   orderingdb:
     image: postgres
