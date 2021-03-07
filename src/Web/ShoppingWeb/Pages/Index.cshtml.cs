@@ -13,7 +13,6 @@ namespace ShoppingWeb.Pages
     {
         private readonly IProductApi _productApi;
         private readonly IBasketApi _basketApi;
-        private string username;
 
         public IndexModel(IApiFactory factory)
         {
@@ -29,11 +28,15 @@ namespace ShoppingWeb.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAddToCartAsync(CartItem cartItem)
+        public async Task<IActionResult> OnPostAddToCartAsync(string productId)
         {
             //if (!User.Identity.IsAuthenticated)
             //    return RedirectToPage("./Account/Login", new { area = "Identity" });
-            await _basketApi.AddItem("test", cartItem);
+            var product = await _productApi.GetProduct(productId);
+
+            var item = new CartItem() { ProductId = product.Id, ProductName = product.Name, Quantity = 1, Color = "Red", Price = product.Price };
+
+            await _basketApi.AddItem("test", item);
             return RedirectToPage("Cart");
         }
     }

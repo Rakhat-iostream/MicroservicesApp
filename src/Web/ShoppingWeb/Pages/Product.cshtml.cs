@@ -48,8 +48,8 @@ namespace ShoppingWeb.Pages
 
     public async Task<IActionResult> OnPostAddToCartAsync(string productId)
     {
-        string username = HttpContext.Session.GetString("username");
-        if (string.IsNullOrEmpty(username)) return RedirectToPage("Login", new { loginError = "Please sign in" });
+       /* string username = HttpContext.Session.GetString("username");
+        if (string.IsNullOrEmpty(username)) return RedirectToPage("Login", new { loginError = "Please sign in" });*/
         var product = await _productApi.GetProduct(productId);
         var item = new CartItem
         {
@@ -58,7 +58,7 @@ namespace ShoppingWeb.Pages
             ProductName = product.Name,
             Quantity = 1
         };
-        await _basketApi.AddItem(username, item);
+        await _basketApi.AddItem("test", item);
         return RedirectToPage("Cart");
     }
 

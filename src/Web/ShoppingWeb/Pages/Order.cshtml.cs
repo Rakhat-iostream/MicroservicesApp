@@ -12,7 +12,6 @@ namespace ShoppingWeb.Pages
     public class OrderModel : PageModel
     {
         private readonly IOrderApi _orderApi;
-        private string username;
 
         public OrderModel(IApiFactory factory)
         {
@@ -23,8 +22,8 @@ namespace ShoppingWeb.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
-            username = HttpContext.Session.GetString("username");
-            Orders = await _orderApi.GetOrdersByUsername(username);
+           /* username = HttpContext.Session.GetString("username");*/
+            Orders = await _orderApi.GetOrdersByUsername("test") ?? new List<Order>();
             return Page();
         }
 

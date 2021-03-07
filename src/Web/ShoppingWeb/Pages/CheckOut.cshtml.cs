@@ -13,7 +13,6 @@ namespace ShoppingWeb.Pages
         private readonly IBasketApi _basketApi;
         private readonly IOrderApi _orderApi;
         private readonly IUsersApi _usersApi;
-        private string username;
 
         public CheckOutModel(IApiFactory factory)
         {
@@ -27,25 +26,23 @@ namespace ShoppingWeb.Pages
 
         public Cart Cart { get; set; }
 
-        public User User { get; set; }
         public async Task<IActionResult> OnGetAsync()
         {
-            User = await _usersApi.GetUserById(Guid.Parse(HttpContext.Session.GetString("id")));
-            Cart = await _basketApi.GetCart(User.Username);
+            Cart = await _basketApi.GetCart("test");
             return Page();
         }
 
         public async Task<IActionResult> OnPostCheckOutAsync()
         {
-            username = HttpContext.Session.GetString("username");
-            Cart = await _basketApi.GetCart(username);
+           /* username = HttpContext.Session.GetString("username");*/
+            Cart = await _basketApi.GetCart("test");
 
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            Order.UserName = username;
+            Order.UserName = "test";
             Order.TotalPrice = Cart.TotalPrice;
 
             await _orderApi.Checkout(Order);
